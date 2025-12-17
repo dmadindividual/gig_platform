@@ -1,0 +1,143 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - Main database for user-service
+  postgres-user:
+    image: postgres:15-alpine
+    container_name: gigplatform-postgres-user
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: userservice
+      POSTGRES_PASSWORD: userpass123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-user-data:/var/lib/postgresql/data
+    networks:
+      - gigplatform-network
+
+  # PostgreSQL - Worker service database
+  postgres-worker:
+    image: postgres:15-alpine
+    container_name: gigplatform-postgres-worker
+    environment:
+      POSTGRES_DB: workerdb
+      POSTGRES_USER: workerservice
+      POSTGRES_PASSWORD: workerpass123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-worker-data:/var/lib/postgresql/data
+    networks:
+      - gigplatform-network
+
+  # PostgreSQL - Gig service database
+  postgres-gig:
+    image: postgres:15-alpine
+    container_name: gigplatform-postgres-gig
+    environment:
+      POSTGRES_DB: gigdb
+      POSTGRES_USER: gigservice
+      POSTGRES_PASSWORD: gigpass123
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-gig-data:/var/lib/postgresql/data
+    networks:
+      - gigplatform-network
+
+  # PostgreSQL - Payment service database
+  postgres-payment:
+    image: postgres:15-alpine
+    container_name: gigplatform-postgres-payment
+    environment:
+      POSTGRES_DB: paymentdb
+      POSTGRES_USER: paymentservice
+      POSTGRES_PASSWORD: paymentpass123
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres-payment-data:/var/lib/postgresql/data
+    networks:
+      - gigplatform-network
+
+  # Redis - Caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: gigplatform-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - gigplatform-network
+    command: redis-server --appendonly yes
+
+  # Zookeeper - Required for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: gigplatform-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - gigplatform-network
+
+  # Kafka - Event streaming
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: gigplatform-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - gigplatform-network
+
+  # Elasticsearch - Search and matching
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: gigplatform-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - gigplatform-network
+
+  # Zipkin - Distributed tracing (optional but useful)
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: gigplatform-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - gigplatform-network
+
+volumes:
+  postgres-user-data:
+  postgres-worker-data:
+  postgres-gig-data:
+  postgres-payment-data:
+  redis-data:
+  elasticsearch-data:
+
+networks:
+  gigplatform-network:
+    driver: bridge
