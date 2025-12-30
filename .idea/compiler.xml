@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.sdkman/candidates/gradle/7.4.2/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="gigplatform.payment-service.main" />
+        <module name="gigplatform.worker-service.main" />
+        <module name="gigplatform.gig-service.main" />
+        <module name="gigplatform.api-gateway.main" />
+        <module name="gigplatform.shared-kernel.main" />
+        <module name="gigplatform.user-service.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="17" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="gigplatform.api-gateway" options="-parameters" />
+      <module name="gigplatform.api-gateway.main" options="-parameters" />
+      <module name="gigplatform.api-gateway.test" options="-parameters" />
+      <module name="gigplatform.gig-service" options="-parameters" />
+      <module name="gigplatform.gig-service.main" options="-parameters" />
+      <module name="gigplatform.gig-service.test" options="-parameters" />
+      <module name="gigplatform.payment-service" options="-parameters" />
+      <module name="gigplatform.payment-service.main" options="-parameters" />
+      <module name="gigplatform.payment-service.test" options="-parameters" />
+      <module name="gigplatform.shared-kernel" options="-parameters" />
+      <module name="gigplatform.shared-kernel.main" options="-parameters" />
+      <module name="gigplatform.shared-kernel.test" options="-parameters" />
+      <module name="gigplatform.user-service" options="-parameters" />
+      <module name="gigplatform.user-service.main" options="-parameters" />
+      <module name="gigplatform.user-service.test" options="-parameters" />
+      <module name="gigplatform.worker-service" options="-parameters" />
+      <module name="gigplatform.worker-service.main" options="-parameters" />
+      <module name="gigplatform.worker-service.test" options="-parameters" />
+    </option>
+  </component>
+</project>

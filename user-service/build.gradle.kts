@@ -15,6 +15,11 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.kafka:spring-kafka")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
+
 
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:testcontainers")

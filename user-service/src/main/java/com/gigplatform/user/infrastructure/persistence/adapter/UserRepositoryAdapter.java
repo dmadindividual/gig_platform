@@ -54,6 +54,9 @@ public class UserRepositoryAdapter implements UserRepository {
         entity.setUserType(user.getUserType());
         entity.setStatus(user.getStatus());
         entity.setEmailVerified(user.isEmailVerified());
+        entity.setBio(user.getBio());                          // ADD
+        entity.setPhoneNumber(user.getPhoneNumber());          // ADD
+        entity.setProfileImageUrl(user.getProfileImageUrl());
         entity.setCreatedAt(user.getCreatedAt());
         entity.setUpdatedAt(user.getUpdatedAt());
         entity.setVersion(user.getVersion());
@@ -68,6 +71,9 @@ public class UserRepositoryAdapter implements UserRepository {
                 entity.getUserType(),
                 entity.getStatus(),
                 entity.isEmailVerified(),
+                entity.getBio(),                    // ADD
+                entity.getPhoneNumber(),            // ADD
+                entity.getProfileImageUrl(),        // ADD
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getVersion()

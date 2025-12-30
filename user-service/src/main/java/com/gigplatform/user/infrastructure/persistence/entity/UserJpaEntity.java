@@ -39,4 +39,13 @@ public class UserJpaEntity extends BaseEntity {
 
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified;
+
+    @Column(name = "bio", length = 500)
+    private String bio;
+
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "profile_image_url", length = 500)
+    private String profileImageUrl;
 }

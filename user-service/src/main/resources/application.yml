@@ -5,8 +5,8 @@ spring:
   # Database configuration
   datasource:
     url: jdbc:postgresql://localhost:5432/userdb
-    username: userservice
-    password: userpass123
+    username: postgres
+    password: postgres123
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10

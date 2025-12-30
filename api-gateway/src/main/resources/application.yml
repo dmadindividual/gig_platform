@@ -1,3 +1,118 @@
+#spring:
+#  application:
+#    name: api-gateway
+#
+#  # Redis for rate limiting
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#
+#  # Gateway routes configuration
+#  cloud:
+#    gateway:
+#      routes:
+#        # User Service routes
+#        - id: user-service
+#          uri: http://localhost:8081
+#          predicates:
+#            - Path=/api/users/**,/api/auth/**
+#          filters:
+#            - name: CircuitBreaker
+#              args:
+#                name: userServiceCircuitBreaker
+#                fallbackUri: forward:/fallback/user-service
+#
+#        # Worker Service routes
+#        - id: worker-service
+#          uri: http://localhost:8082
+#          predicates:
+#            - Path=/api/workers/**
+#          filters:
+#            - name: CircuitBreaker
+#              args:
+#                name: workerServiceCircuitBreaker
+#
+#        # Gig Service routes
+#        - id: gig-service
+#          uri: http://localhost:8083
+#          predicates:
+#            - Path=/api/gigs/**,/api/bids/**
+#          filters:
+#            - name: CircuitBreaker
+#              args:
+#                name: gigServiceCircuitBreaker
+#
+#        # Payment Service routes
+#        - id: payment-service
+#          uri: http://localhost:8084
+#          predicates:
+#            - Path=/api/payments/**,/api/transactions/**
+#          filters:
+#            - name: CircuitBreaker
+#              args:
+#                name: paymentServiceCircuitBreaker
+#
+#      # Global CORS configuration
+#      globalcors:
+#        corsConfigurations:
+#          '[/**]':
+#            allowedOrigins: "http://localhost:3000,http://localhost:4200"
+#            allowedMethods:
+#              - GET
+#              - POST
+#              - PUT
+#              - DELETE
+#              - PATCH
+#              - OPTIONS
+#            allowedHeaders: "*"
+#            allowCredentials: true
+#            maxAge: 3600
+#
+#server:
+#  port: 8080
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info,metrics,prometheus,gateway
+#  endpoint:
+#    health:
+#      show-details: always
+#  zipkin:
+#    tracing:
+#      endpoint: http://localhost:9411/api/v2/spans
+#
+## Resilience4j Circuit Breaker configuration
+#resilience4j:
+#  circuitbreaker:
+#    configs:
+#      default:
+#        slidingWindowSize: 10
+#        permittedNumberOfCallsInHalfOpenState: 3
+#        waitDurationInOpenState: 10s
+#        failureRateThreshold: 50
+#        slowCallRateThreshold: 100
+#        slowCallDurationThreshold: 2s
+#    instances:
+#      userServiceCircuitBreaker:
+#        baseConfig: default
+#      workerServiceCircuitBreaker:
+#        baseConfig: default
+#      gigServiceCircuitBreaker:
+#        baseConfig: default
+#      paymentServiceCircuitBreaker:
+#        baseConfig: default
+#
+#logging:
+#  level:
+#    root: INFO
+#    com.gigplatform: DEBUG
+#    org.springframework.cloud.gateway: DEBUG
+
+
+
 spring:
   application:
     name: api-gateway
@@ -11,48 +126,6 @@ spring:
   # Gateway routes configuration
   cloud:
     gateway:
-      routes:
-        # User Service routes
-        - id: user-service
-          uri: http://localhost:8081
-          predicates:
-            - Path=/api/users/**,/api/auth/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: userServiceCircuitBreaker
-                fallbackUri: forward:/fallback/user-service
-
-        # Worker Service routes
-        - id: worker-service
-          uri: http://localhost:8082
-          predicates:
-            - Path=/api/workers/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: workerServiceCircuitBreaker
-
-        # Gig Service routes
-        - id: gig-service
-          uri: http://localhost:8083
-          predicates:
-            - Path=/api/gigs/**,/api/bids/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: gigServiceCircuitBreaker
-
-        # Payment Service routes
-        - id: payment-service
-          uri: http://localhost:8084
-          predicates:
-            - Path=/api/payments/**,/api/transactions/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: paymentServiceCircuitBreaker
-
       # Global CORS configuration
       globalcors:
         corsConfigurations:
@@ -69,22 +142,68 @@ spring:
             allowCredentials: true
             maxAge: 3600
 
+      # Route definitions
+      routes:
+        # User Service - Auth endpoints (public)
+        - id: user-service-auth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: userServiceCircuitBreaker
+                fallbackUri: forward:/fallback/user-service
+
+        # User Service - User endpoints (requires auth)
+        - id: user-service-users
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: userServiceCircuitBreaker
+
+        # Worker Service
+        - id: worker-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/workers/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: workerServiceCircuitBreaker
+
+        # Gig Service
+        - id: gig-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/gigs/**,/api/bids/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: gigServiceCircuitBreaker
+
+        # Payment Service
+        - id: payment-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/payments/**,/api/transactions/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: paymentServiceCircuitBreaker
+
 server:
   port: 8080
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus,gateway
-  endpoint:
-    health:
-      show-details: always
-  zipkin:
-    tracing:
-      endpoint: http://localhost:9411/api/v2/spans
+# JWT configuration (same as user-service)
+app:
+  jwt:
+    secret: your-256-bit-secret-key-change-this-in-production
 
-# Resilience4j Circuit Breaker configuration
+# Resilience4j Circuit Breaker
 resilience4j:
   circuitbreaker:
     configs:
@@ -104,6 +223,16 @@ resilience4j:
         baseConfig: default
       paymentServiceCircuitBreaker:
         baseConfig: default
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:

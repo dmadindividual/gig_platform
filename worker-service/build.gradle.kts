@@ -14,14 +14,6 @@ dependencies {
 
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.springframework.kafka:spring-kafka-test")
-}
+    implementation("org.flywaydb:flyway-core")
 
-
-// ADD THIS
-tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    enabled = false
-}
-
-tasks.named<Jar>("jar") {
-    enabled = true
 }

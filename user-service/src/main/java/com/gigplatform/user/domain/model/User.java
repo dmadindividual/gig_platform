@@ -19,6 +19,10 @@ public class User extends BaseEntity {
     private UserStatus status;
     private boolean emailVerified;
 
+    private String bio;
+    private String phoneNumber;
+    private String profileImageUrl;
+
     public static User create(String email, String passwordHash, UserType userType) {
         User user = new User();
         user.email = new Email(email);
@@ -36,6 +40,9 @@ public class User extends BaseEntity {
             UserType userType,
             UserStatus status,
             boolean emailVerified,
+            String bio,                 // ADD
+            String phoneNumber,         // ADD
+            String profileImageUrl,     // ADD
             Instant createdAt,
             Instant updatedAt,
             Long version
@@ -47,12 +54,14 @@ public class User extends BaseEntity {
         user.userType = userType;
         user.status = status;
         user.emailVerified = emailVerified;
+        user.bio = bio;                          // ADD
+        user.phoneNumber = phoneNumber;          // ADD
+        user.profileImageUrl = profileImageUrl;  // ADD
         user.setCreatedAt(createdAt);
         user.setUpdatedAt(updatedAt);
         user.setVersion(version);
         return user;
     }
-
     public void verifyEmail() {
         if (this.emailVerified) {
             throw new IllegalStateException("Email already verified");
@@ -76,5 +85,17 @@ public class User extends BaseEntity {
 
     public boolean isActive() {
         return this.status == UserStatus.ACTIVE;
+    }
+
+    public void updateProfile(String bio, String phoneNumber, String profileImageUrl) {
+        if (bio != null) {
+            this.bio = bio;
+        }
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
+        }
+        if (profileImageUrl != null) {
+            this.profileImageUrl = profileImageUrl;
+        }
     }
 }
